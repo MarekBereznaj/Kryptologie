@@ -4,10 +4,13 @@ import hashlib
 import RSA
 import base64
 import re
+import os
+import time
 
 # Globální proměnné pro uchování veřejného a soukromého klíče
 public_key_content = None
 private_key_content = None
+selected_file_path = None
 
 # Funkce pro načtení klíče z souboru
 def load_key(filepath, is_public=True):
@@ -30,23 +33,28 @@ def load_key(filepath, is_public=True):
                 private_key_content = key
                 private_key_display.insert(tk.END, str(key))
     except Exception as e:
+        # Zobrazení chybového hlášení v případě výjimky
         messagebox.showerror("Chyba", f"Chyba při načítání klíče: {e}")
 
 # Funkce pro načtení veřejného klíče pomocí GUI
 def load_public_key():
+    # Zobrazení dialogu pro výběr souboru s veřejným klíčem
     public_key_file = filedialog.askopenfilename(
         defaultextension=".pub", filetypes=[("Public Key Files", "*.pub"), ("All Files", "*.*")], title="Vybrat veřejný klíč"
     )
     if public_key_file:
+        # Načtení a zobrazení veřejného klíče
         public_key_display.delete(1.0, tk.END)
         load_key(public_key_file, is_public=True)
 
 # Funkce pro načtení soukromého klíče pomocí GUI
 def load_private_key():
+    # Zobrazení dialogu pro výběr souboru se soukromým klíčem
     private_key_file = filedialog.askopenfilename(
         defaultextension=".priv", filetypes=[("Private Key Files", "*.priv"), ("All Files", "*.*")], title="Vybrat soukromý klíč"
     )
     if private_key_file:
+        # Načtení a zobrazení soukromého klíče
         private_key_display.delete(1.0, tk.END)
         load_key(private_key_file, is_public=False)
 
@@ -56,15 +64,19 @@ def save_key_to_file(key, filename):
         # Převod klíče na string a poté na bytes, následné kódování do BASE64
         key_bytes = f"{key[0]},{key[1]}".encode()
         key_base64 = base64.b64encode(key_bytes)
+        # Uložení klíče do souboru
         with open(filename, 'wb') as file:
             file.write(key_base64)
     except Exception as e:
+        # Zobrazení chybového hlášení v případě výjimky
         messagebox.showerror("Chyba", f"Chyba při ukládání klíče: {e}")
 
 # Funkce pro generování RSA klíčů a jejich uložení
 def generate_keys_gui():
     try:
+        # Generování veřejného a soukromého klíče
         public_key, private_key = RSA.generate_keys()
+
         # Dialog pro uložení veřejného klíče
         public_key_file = filedialog.asksaveasfilename(
             defaultextension=".pub",
@@ -72,6 +84,7 @@ def generate_keys_gui():
             title="Uložit veřejný klíč jako"
         )
         if public_key_file:
+            # Uložení veřejného klíče do souboru
             save_key_to_file(public_key, public_key_file)
             public_key_display.delete(1.0, tk.END)
             public_key_display.insert(tk.END, f"Veřejný klíč uložen: {public_key_file}")
@@ -83,25 +96,33 @@ def generate_keys_gui():
             title="Uložit soukromý klíč jako"
         )
         if private_key_file:
+            # Uložení soukromého klíče do souboru
             save_key_to_file(private_key, private_key_file)
             private_key_display.delete(1.0, tk.END)
             private_key_display.insert(tk.END, f"Soukromý klíč uložen: {private_key_file}")
 
     except Exception as e:
+        # Zobrazení chybového hlášení v případě výjimky
         messagebox.showerror("Chyba", f"Chyba při generování klíčů: {e}")
 
 # Funkce pro výpočet hash hodnoty souboru pomocí SHA3-512
 def calculate_hash(file_path):
+    # Inicializace SHA3-512 hashovací funkce
     sha3_512 = hashlib.sha3_512()
+    # Otevření souboru a postupné čtení a hashování obsahu
     with open(file_path, 'rb') as file:
         while chunk := file.read(8192):
             sha3_512.update(chunk)
+    # Vrácení výsledného hash
     return sha3_512.digest()
 
 # Funkce pro digitální podpis souboru
 def sign_file(file_path, private_key, output_file):
+    # Výpočet hash hodnoty souboru
     file_hash = calculate_hash(file_path)
+    # Šifrování hash hodnoty pomocí soukromého klíče
     signature = RSA.encrypt(private_key, int.from_bytes(file_hash, byteorder='big'))
+    # Uložení podpisu do souboru
     signature_file_path = output_file + '.sign'
     with open(signature_file_path, 'wb') as signature_file:
         signature_file.write(signature.to_bytes((signature.bit_length() + 7) // 8, byteorder='big'))
@@ -109,76 +130,91 @@ def sign_file(file_path, private_key, output_file):
 
 # Funkce pro ověření digitálního podpisu
 def verify_signature(file_path, signature_file_path, public_key):
+    # Výpočet hash hodnoty původního souboru
     file_hash = calculate_hash(file_path)
     print("Vypočítaný hash souboru:", file_hash.hex())
+    # Načtení a dešifrování podpisu
     with open(signature_file_path, 'rb') as signature_file:
         signature = int.from_bytes(signature_file.read(), byteorder='big')
     decrypted_signature = RSA.decrypt(public_key, signature)
     print("Dešifrovaný podpis:", decrypted_signature.to_bytes((decrypted_signature.bit_length() + 7) // 8, byteorder='big').hex())
+    # Porovnání hash hodnoty s dešifrovaným podpisem
     is_valid = decrypted_signature == int.from_bytes(file_hash, byteorder='big')
     print("Podpis je", "platný" if is_valid else "neplatný")
     return is_valid
 
-# Funkce pro vybrání souboru pomocí GUI
-def select_file():
-    file_path = filedialog.askopenfilename()
-    file_path_display.delete(1.0, tk.END)
-    file_path_display.insert(tk.END, file_path)
 
-# GUI funkce pro podepsání souboru
+def select_file():
+    global selected_file_path
+    selected_file_path = filedialog.askopenfilename()
+    file_path_display.delete(1.0, tk.END)
+
+    if selected_file_path:
+        # Zobrazení cesty k vybranému souboru
+        file_path_display.insert(tk.END, selected_file_path + "\n")
+
+        # Získání a zobrazení základních informací o souboru
+        file_info = os.stat(selected_file_path)
+        file_name = os.path.basename(selected_file_path)
+        file_creation_time = time.ctime(file_info.st_ctime)
+        file_size = file_info.st_size
+        file_type = "Directory" if os.path.isdir(selected_file_path) else "File"
+
+        # Formátování a výpis informací o souboru
+        info_text = f"Name: {file_name}\n" \
+                    f"Path: {selected_file_path}\n" \
+                    f"Creation Time: {file_creation_time}\n" \
+                    f"Type: {file_type}\n" \
+                    f"Size: {file_size} bytes\n"
+        
+        file_path_display.insert(tk.END, info_text)
+
+# Funkce pro podpisování souboru pomocí GUI
 def sign_file_gui():
-    file_path = file_path_display.get("1.0", "end-1c").strip()
-    if not file_path:
+    global selected_file_path
+    if not selected_file_path:
         messagebox.showerror("Chyba", "Žádný soubor nebyl vybrán")
         return
+
     private_key = eval(private_key_display.get("1.0", "end-1c"))
     signature_output_file = filedialog.asksaveasfilename(
         defaultextension=".sign",
         filetypes=[("Signature Files", "*.sign"), ("All Files", "*.*")],
         title="Uložit podpis jako"
     )
-    if signature_output_file:
-        signature_file_path = sign_file(file_path, private_key, signature_output_file)
-        signature_display.delete(1.0, tk.END)
-        signature_display.insert(tk.END, f"Podpis uložen: {signature_file_path}")
 
-# GUI funkce pro ověření podpisu
+    if signature_output_file:
+        # Vytvoření podpisu vybraného souboru a uložení do specifikovaného souboru
+        signature_file_path = sign_file(selected_file_path, private_key, signature_output_file)
+    else:
+        messagebox.showerror("Chyba", "Nebyl vybrán žádný výstupní soubor pro podpis")
+
+# Funkce pro ověření podpisu souboru pomocí GUI
 def verify_signature_gui():
-    file_path = file_path_display.get("1.0", "end-1c").strip()
+    global selected_file_path
+    if not selected_file_path:
+        messagebox.showerror("Chyba", "Soubor nebo podpis nebyly vybrány")
+        return
     signature_file_path = filedialog.askopenfilename(
         defaultextension=".sign",
         filetypes=[("Signature Files", "*.sign"), ("All Files", "*.*")],
         title="Vybrat podpisový soubor pro ověření"
     )
-    if not file_path or not signature_file_path:
-        messagebox.showerror("Chyba", "Soubor nebo podpis nebyly vybrány")
-        return
     public_key = eval(public_key_display.get("1.0", "end-1c"))
-    is_valid = verify_signature(file_path, signature_file_path, public_key)
+    # Ověření digitálního podpisu vybraného souboru
+    is_valid = verify_signature(selected_file_path, signature_file_path, public_key)
     messagebox.showinfo("Výsledek ověření", f"Podpis je {'platný' if is_valid else 'neplatný'}")
 
-# GUI funkce pro import podpisu
-def import_signature_gui():
-    signature_file = filedialog.askopenfilename(
-        defaultextension=".sign",
-        filetypes=[("Signature Files", "*.sign"), ("All Files", "*.*")],
-        title="Vybrat podpisový soubor pro import"
-    )
-    if signature_file:
-        with open(signature_file, 'rb') as file:
-            signature = file.read()
-            signature_display.delete(1.0, tk.END)
-            signature_display.insert(tk.END, signature.hex())  # Zobrazí hexadecimální reprezentaci podpisu
-
+# Nastavení GUI aplikace
 root = tk.Tk()
 root.title("Elektronický Podpis")
-root.geometry("900x800")  # Nastaví velikost okna
+root.geometry("900x400")  # Nastaví velikost okna
 
-# Vytvoření rámu pro tlačítka a přidání do GUI
+# Vytvoření a konfigurace rámu pro tlačítka
 button_frame = tk.Frame(root)
 button_frame.pack(pady=10)
 
-
+# Vytvoření a umístění tlačítek pro různé funkce aplikace
 load_public_key_button = tk.Button(button_frame, text="Naimportovat veřejný klíč", command=load_public_key)
 load_public_key_button.grid(row=0, column=1, padx=5)
 
@@ -197,12 +233,9 @@ verify_signature_button.grid(row=0, column=5, padx=5)
 generate_keys_button = tk.Button(button_frame, text="Generovat klíče", command=generate_keys_gui)
 generate_keys_button.grid(row=0, column=6, padx=5)
 
-# Textová pole
-file_path_display = scrolledtext.ScrolledText(root, height=2, width=70)
+# Vytvoření a konfigurace textových polí pro zobrazování informací
+file_path_display = scrolledtext.ScrolledText(root, height=6, width=70)
 file_path_display.pack(pady=10)
-
-signature_display = scrolledtext.ScrolledText(root, height=4, width=70)
-signature_display.pack(pady=10)
 
 public_key_display = scrolledtext.ScrolledText(root, height=5, width=70)
 public_key_display.pack(pady=10)
@@ -210,4 +243,5 @@ public_key_display.pack(pady=10)
 private_key_display = scrolledtext.ScrolledText(root, height=5, width=70)
 private_key_display.pack(pady=10)
 
+# Spuštění hlavní smyčky aplikace
 root.mainloop()
