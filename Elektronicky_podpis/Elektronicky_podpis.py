@@ -132,15 +132,12 @@ def sign_file(file_path, private_key, output_file):
 def verify_signature(file_path, signature_file_path, public_key):
     # Výpočet hash hodnoty původního souboru
     file_hash = calculate_hash(file_path)
-    print("Vypočítaný hash souboru:", file_hash.hex())
     # Načtení a dešifrování podpisu
     with open(signature_file_path, 'rb') as signature_file:
         signature = int.from_bytes(signature_file.read(), byteorder='big')
     decrypted_signature = RSA.decrypt(public_key, signature)
-    print("Dešifrovaný podpis:", decrypted_signature.to_bytes((decrypted_signature.bit_length() + 7) // 8, byteorder='big').hex())
-    # Porovnání hash hodnoty s dešifrovaným podpisem
+      # Porovnání hash hodnoty s dešifrovaným podpisem
     is_valid = decrypted_signature == int.from_bytes(file_hash, byteorder='big')
-    print("Podpis je", "platný" if is_valid else "neplatný")
     return is_valid
 
 
@@ -157,6 +154,7 @@ def select_file():
         file_info = os.stat(selected_file_path)
         file_name = os.path.basename(selected_file_path)
         file_creation_time = time.ctime(file_info.st_ctime)
+        file_modification_time = time.ctime(file_info.st_mtime)  # Přidáno pro zobrazení času poslední modifikace
         file_size = file_info.st_size
         file_type = "Directory" if os.path.isdir(selected_file_path) else "File"
 
@@ -164,10 +162,12 @@ def select_file():
         info_text = f"Name: {file_name}\n" \
                     f"Path: {selected_file_path}\n" \
                     f"Creation Time: {file_creation_time}\n" \
+                    f"Last Modified: {file_modification_time}\n" \
                     f"Type: {file_type}\n" \
                     f"Size: {file_size} bytes\n"
         
         file_path_display.insert(tk.END, info_text)
+
 
 # Funkce pro podpisování souboru pomocí GUI
 def sign_file_gui():
@@ -234,7 +234,7 @@ generate_keys_button = tk.Button(button_frame, text="Generovat klíče", command
 generate_keys_button.grid(row=0, column=6, padx=5)
 
 # Vytvoření a konfigurace textových polí pro zobrazování informací
-file_path_display = scrolledtext.ScrolledText(root, height=6, width=70)
+file_path_display = scrolledtext.ScrolledText(root, height=8, width=70)
 file_path_display.pack(pady=10)
 
 public_key_display = scrolledtext.ScrolledText(root, height=5, width=70)
