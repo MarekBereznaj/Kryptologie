@@ -1,4 +1,3 @@
-
 import random
 import math
 
@@ -44,7 +43,7 @@ def generate_prime_candidate(length):
     return p
 
 # Generuje prvočíslo
-def generate_prime_number(length=256):
+def generate_prime_number(length=1024):
     p = 4
     while not is_prime(p):
         p = generate_prime_candidate(length)
@@ -86,26 +85,12 @@ def generate_keys():
 def encrypt(public_key, plaintext):
     key, n = public_key
     if isinstance(plaintext, str):
-        plaintext = ord(plaintext)  # Convert a single character to its Unicode code point
+        plaintext = ord(plaintext)  # Převede jedno písmeno na jeho Unicode kód
     encrypted = pow(plaintext, key, n)
     return encrypted
 
 # Dešifruje text
 def decrypt(private_key, signature):
-    key_size = private_key[0].bit_length() // 8  # Get the key size in bytes
-    signature_blocks = [signature[i:i + key_size] for i in range(0, len(signature), key_size)]
-    
-    decrypted_blocks = []
-    for block in signature_blocks:
-        decrypted_block = pow(int.from_bytes(block, byteorder='big'), private_key[1], private_key[0])
-        # Split the decrypted result into bytes of a fixed size
-        decrypted_bytes = decrypted_block.to_bytes((decrypted_block.bit_length() + 7) // 8, byteorder='big')
-        decrypted_blocks.append(decrypted_bytes)
-    
-    decrypted_signature = b"".join(decrypted_blocks)
+    key, n = private_key
+    decrypted_signature = pow(signature, key, n)
     return decrypted_signature
-
-
-
-
-
