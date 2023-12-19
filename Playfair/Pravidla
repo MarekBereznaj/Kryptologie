@@ -1,0 +1,11 @@
+Šifrování: Pro každou dvojici písmen se použijí následující pravidla pro jejich transformaci:
+
+a. Pokud obě písmena dvojice jsou ve stejném řádku matice, nahradí se písmena písmeny v tom samém řádku, přičemž se posunou o jedno místo doprava. Například: "AC" by se mohlo šifrovat jako "BD".
+
+b. Pokud obě písmena dvojice jsou ve stejném sloupci matice, nahradí se písmena písmeny ve stejném sloupci, přičemž se posunou o jedno místo dolů. Například: "CA" by se mohlo šifrovat jako "DM".
+
+c. Pokud obě písmena dvojice jsou v různých řádcích a sloupcích, výstupem jsou písmena ve stejném řádku, ale na opačných koncích tohoto řádku. Například: "AB" by se mohlo šifrovat jako "CE".
+
+d. Pokud se v dvojici opakuje stejné písmeno, vloží se mezi ně písmeno 'X' nebo 'Q' (v závislosti na konkrétní implementaci).
+
+e. Pokud zůstane pouze jedno písmeno, přidá se písmeno 'X' nebo 'Q' na konci, aby 
