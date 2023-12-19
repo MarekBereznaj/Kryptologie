@@ -40,16 +40,6 @@ textbox_text_d.pack()
 my_label = tk.Label(root, text="")
 my_label.pack(pady=20)
 
-# Funkce pro odstranění nepotřebných znaků z textu
-def fixtext(strng):
-    CHARS_TO_REMOVE = '''!ˇ´()-[]{};:'",<>./?@#$%^&*_~'''
-
-    for char in CHARS_TO_REMOVE:
-        strng = strng.replace(char, "")
-
-    strng = str.lower(strng)
-    return strng
-
 # Funkce pro normalizaci a odstranění diakritiky
 def coding(strng):
     strng = unicodedata.normalize('NFD', strng)
