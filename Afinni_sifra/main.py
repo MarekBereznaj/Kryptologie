@@ -1,12 +1,12 @@
-import tkinter as tk
-from math import gcd
-import string
-import unicodedata
+import tkinter as tk  # Import knihovny pro vytvoření grafického rozhraní
+from math import gcd  # Import funkce pro výpočet největšího společného dělitele
+import string  # Import knihovny pro práci s řetězci
+import unicodedata  # Import knihovny pro práci s diakritikou
 
 # Inicializace hlavního okna
 root = tk.Tk()
-root.geometry("800x800")
-root.title("Afinní šifra")
+root.geometry("800x800")  # Nastavení rozměrů okna
+root.title("Afinní šifra")  # Nastavení titulku okna
 
 # Vytvoření labelu a textového pole pro klíč A
 label_A = tk.Label(root, text="Klíč A", font=('Arial', 18))
@@ -43,8 +43,9 @@ my_label.pack(pady=20)
 # Funkce pro normalizaci a odstranění diakritiky
 def coding(strng):
     strng = unicodedata.normalize('NFD', strng)
-    strng = u"".join([c for c in strng if not unicodedata.combining(c)])
+    strng = u"".join([c for c in strng if not unicodedata.combining(c)]);
     return strng
+
 # Funkce pro odstranění speciálních znaků a volání funkce pro normalizaci znaků
 def fixedtext(strng):
     CHARS_TO_REMOVE = '''!ˇ´()-[]{};:'",<>./?@#$%^&*_~'''
@@ -53,16 +54,18 @@ def fixedtext(strng):
         strng = strng.replace(char, "")
 
     strng = str.lower(strng)
-    strng=coding(strng)
+    strng = coding(strng)
     return strng
+
 # Funkce pro zašifrování textu
 def get_text():
     my_label.config(text="")  # Vymazání výstupního labelu
-    OT = textbox_text.get(1.0, "end-1c")
-    a = int(textbox_A.get(1.0, "end-1c"))
-    b = int(textbox_B.get(1.0, "end-1c"))
-    OT = fixedtext(OT)
+    OT = textbox_text.get(1.0, "end-1c")  # Získání textu z textového pole
+    a = int(textbox_A.get(1.0, "end-1c"))  # Získání klíče A
+    b = int(textbox_B.get(1.0, "end-1c"))  # Získání klíče B
+    OT = fixedtext(OT)  # Úprava vstupního textu
 
+    # Kontrola platnosti klíče A
     if gcd(a, 26) != 1 or not (1 <= a <= 25):
         my_label.config(text="Neplatný klíč A. Klíč A musí být nesoudělný s 26 a v rozmezí [1, 25].")
         return
@@ -72,7 +75,8 @@ def get_text():
         if j.isspace():
             encrypted_text += "XMEZERAX"
         elif j.isalpha():
-            output = (a * (ord(j) - (65 + (32 * (ord(j) > 96)))) + b) % 26
+            # Šifrování písmen podle afinní šifry
+            output = (a * (ord(j) - (65 + (32 * (ord(j) > 96)))) + b) % 26 #a ovlivněje změnu pozic a b ovlivňuje posun ord() získává ASCII hodnotu znaku a převede jej na celé číslo podle ASCII tabulky.
             encrypted_text += string.ascii_uppercase[output]
         elif j.isdigit():
             encrypted_text += str((int(j) + b) % 10)
@@ -85,14 +89,14 @@ def get_text():
 # Funkce pro dešifrování textu
 def desifruj_text():
     desifrovan_label.config(text="")
-    a = int(textbox_A.get(1.0, "end-1c"))
-    b = int(textbox_B.get(1.0, "end-1c"))
-    desifrovan = textbox_text_d.get(1.0, "end-1c")
-    desifrovan = str.lower(desifrovan)
+    a = int(textbox_A.get(1.0, "end-1c"))  # Získání klíče A
+    b = int(textbox_B.get(1.0, "end-1c"))  # Získání klíče B
+    desifrovan = textbox_text_d.get(1.0, "end-1c")  # Získání textu k dešifrování
+    desifrovan = str.lower(desifrovan)  # Převedení na malá písmena
     add = ""
-    desifrovan = desifrovan.replace(" ", "")
+    desifrovan = desifrovan.replace(" ", "")  # Odstranění mezer
 
-    desifrovan = desifrovan.replace("xmezerax", " ")
+    desifrovan = desifrovan.replace("xmezerax", " ")  # Obnovení mezer
 
     for h in desifrovan:
         if h.isspace():
@@ -100,6 +104,7 @@ def desifruj_text():
         elif h.isalpha():
             alphabet = string.ascii_lowercase
             ot = alphabet.find(h)
+            # Dešifrování podle afinní šifry
             position = (pow(a, -1, 26) * (ot - b)) % 26
             add += string.ascii_uppercase[position]
         elif h.isdigit():
@@ -132,5 +137,5 @@ Button_copy_encrypt.pack(side=tk.LEFT, padx=20, pady=20)
 Button_copy_decrypt = tk.Button(root, text="Kopírovat výstup z dešifrování", command=copy_decryption_output)
 Button_copy_decrypt.pack(side=tk.LEFT, padx=20, pady=20)
 
-# Spuštění hlavní smyčky
+# Spuštění hlavní smyčky pro grafické rozhraní
 root.mainloop()
