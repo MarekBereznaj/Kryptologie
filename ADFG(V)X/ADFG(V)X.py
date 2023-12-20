@@ -20,26 +20,23 @@ class ADFGX_Cipher:
         # Nastavení abecedy dle jazyka a varianty
         if self.language == 'CZ' and self.variant == "ADFGX":
             self.alphabet = 'ABCDEFGHIJKLMNOPQRSTUVXYZ'
-        elif self.language == 'EN' and self.variant == "ADFGX":
-            self.alphabet = 'ABCDEFGHIKLMNOPQRSTUVWXYZ'
         else:
-            self.alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+            self.alphabet = 'ABCDEFGHIKLMNOPQRSTUVWXYZ' if variant == "ADFGX" else 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
         self.create_transposition_matrix()
 
     # Vytvoření transpoziční matice
     def create_transposition_matrix(self):
         temp = list(self.alphabet)
         random.shuffle(temp)
-        self.matrix = {char: pair for char, pair in zip(temp, product(self.adfg, repeat=2))} 
+        self.matrix = {char: pair for char, pair in zip(temp, product(self.adfg, repeat=2))}
 
     # Funkce pro šifrování
     def encrypt(self, plaintext):
         # Normalizace vstupu dle jazyka
-        if self.language == 'CZ' and self.variant == "ADFGX":
-            plaintext = self.coding(plaintext.upper()).replace('W', 'V') 
-        elif self.language == 'EN' and self.variant == "ADFGX":
-            plaintext = self.coding(plaintext.upper()).replace('J', 'I')
-        plaintext= self.coding(plaintext.upper())
+        if self.language == 'CZ':
+            plaintext = self.normalize_czech_characters(plaintext.upper()).replace('W', 'V')
+        elif self.language == 'EN':
+            plaintext = plaintext.upper().replace('J', 'I')
         
         plaintext = plaintext.replace(' ', 'XMEZERAX')
         substituted = ''.join(''.join(self.matrix[char]) for char in plaintext if char in self.matrix)
