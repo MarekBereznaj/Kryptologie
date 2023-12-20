@@ -21,7 +21,7 @@ def miller_rabin(n, k):
         d //= 2
 
     # Provedení testu k-krát
-    for _ in range(k):
+    for _ in range(5):
         a = random.randint(2, n - 2)
         x = pow(a, d, n)  # Výpočet a^d % n
         if x == 1 or x == n - 1:
@@ -34,10 +34,6 @@ def miller_rabin(n, k):
             return False
     return True
 
-# Zjistí, zda je číslo prvočíslo s použitím Miller-Rabinova testu
-def is_prime(n, k=5):
-    return miller_rabin(n, k)
-
 # Generuje kandidáta na prvočíslo
 def generate_prime_candidate(length):
     p = random.getrandbits(length)
@@ -47,7 +43,7 @@ def generate_prime_candidate(length):
 # Generuje prvočíslo
 def generate_prime_number(length=256):
     p = 4
-    while not is_prime(p):
+    while not miller_rabin(p):
         p = generate_prime_candidate(length)
     return p
 
