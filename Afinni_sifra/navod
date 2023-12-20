@@ -1,0 +1,26 @@
+Klíč:
+Klíčem pro afinní šifru jsou dvě čísla, označovaná jako "a" a "b".
+"a" musí být relativně prvočíslo s délkou abecedy (například v angličtině, kde je 26 písmen, musí být "a" relativně prvočíslo s 26).
+"b" je celé číslo, které určuje posunutí (shift) znaků.
+
+Šifrování:
+Každé písmeno v otevřeném textu je převedeno na odpovídající číslo (například 'A' = 0, 'B' = 1, atd.).
+Poté se aplikuje matematická operace: (ax + b) % m, kde:
+"a" je klíčové číslo, které je relativně prvočíslo s délkou abecedy (m).
+"x" je číslo odpovídající písmenu v otevřeném textu.
+"b" je klíčové číslo posunutí.
+"m" je délka abecedy (počet písmen).
+Výsledek této operace je nové číslo, které se převede zpět na písmeno v šifrovaném textu.
+
+Dešifrování:
+Pro dešifrování se použijí inverzní matematické operace.
+Každé písmeno v šifrovaném textu je převedeno na odpovídající číslo.
+Aplikuje se matematická operace: [(x - b) * a^(-1)] % m, kde:
+"x" je číslo odpovídající písmenu ve šifrovaném textu.
+"a" a "b" jsou stejné jako při šifrování.
+"a^(-1)" je inverzní prvek k "a" modulo "m" (relativně prvočíslu "m").
+Výsledek této operace je číslo, které se převede zpět na písmeno v otevřeném textu.
+Zvláštní případy:
+
+Je-li "a" rovno 1, pak se jedná o tzv. Caesarovu šifru, kde je text pouze posunut o pevný počet míst (v tomto případě "b").
+Je-li "a" rovno 0, pak se jedná o šifrování písmen bez změny (písmena zůstanou stejná).
