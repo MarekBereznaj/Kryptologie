@@ -1,0 +1,21 @@
+Vytvoření Matice:
+
+Začněte s klíčem (obvykle slovem nebo frází) a odstraňte z něj opakující se písmena.
+Vytvořte matice (nebo tabulku) s určitým počtem řádků a sloupců. ADFGX má obvykle 5x5 matici, zatímco ADFGVX používá 6x6 matici (včetně číslic 0-9).
+Klíčová slova (bez opakovaných písmen) se zapisují do matice po řádcích, začínajíc od levého horního rohu.
+Šifrování:
+
+Otevřený text je nejprve normalizován (odstranění diakritiky, převod na velká písmena atd.).
+Každé písmeno v otevřeném textu je nahrazeno odpovídajícím symbolovým párem (AD, DF, FG, GX, a v případě ADFGVX šifry také V).
+Tímto způsobem vznikne nový text, který je reprezentován symboly.
+Dešifrování:
+
+Dešifrování probíhá opačným směrem. Symboly v šifrovaném textu jsou nahrazeny odpovídajícími písmeny.
+Písmena jsou umístěna zpět do matice podle klíče.
+Dešifrovaný text je získán spojením písmen podle pravidel, která byla použita při šifrování.
+Zvláštní Znaky:
+
+Pro zvláštní znaky (mezery, interpunkci atd.) jsou použity symboly, které nejsou obsaženy v matici.
+Klíč:
+
+Bez znalosti klíče a přesného uspořádání matice je těžké dešifrovat zprávu.
