@@ -20,4 +20,5 @@ Ověření Identity:
 Veřejný klíč je obvykle spojen s konkrétní osobou nebo entitou, což pomáhá při ověření identity odesílatele.
 base64.b64decode:
 
-V průběhu tohoto procesu je digitální podpis často převeden na textový řetězec pomocí kódování base64. Tato konverze umožňuje snadnější přenos a ukládání podpisu. Když je podpis obdržen, musí být dekódován z base64 pomocí base64.b64decode, aby bylo možné ho použít k ověření podpisu.
+V průběhu tohoto procesu je digitální podpis často převeden na textový řetězec pomocí kódování base64. Tato konverze umožňuje snadnější přenos a 
+ukládání podpisu. Když je podpis obdržen, musí být dekódován z base64 pomocí base64.b64decode, aby bylo možné ho použít k ověření podpisu.
