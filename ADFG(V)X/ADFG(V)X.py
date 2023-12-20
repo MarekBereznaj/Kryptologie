@@ -7,9 +7,10 @@ import unicodedata
 # Třída pro šifrování/dešifrování pomocí ADFGX/ADFGVX
 class ADFGX_Cipher:
     # Normalizace českých znaků (odstranění diakritiky)
-    def normalize_czech_characters(self, text):
-        normalized = unicodedata.normalize('NFD', text)
-        return ''.join(ch for ch in normalized if unicodedata.category(ch) != 'Mn')
+    def coding(self, text):
+        text = unicodedata.normalize('NFD', text)
+        text = ''.join(ch for ch in text if not unicodedata.combining(ch))
+        return text
 
     # Konstruktor třídy
     def __init__(self, key, variant, language='EN'):
@@ -62,7 +63,7 @@ class ADFGX_Cipher:
         plaintext = ''
         for pair in zip(*[iter(''.join(rows))] * 2):
             plaintext += reversed_matrix.get(pair, '')
-        decrypted_text = self.normalize_czech_characters(plaintext.replace('XMEZERAX', ' '))
+        decrypted_text = self.coding(plaintext.replace('XMEZERAX', ' '))
         return decrypted_text
 
     # Funkce pro získání matice jako seznam
