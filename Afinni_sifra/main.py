@@ -43,7 +43,7 @@ my_label.pack(pady=20)
 # Funkce pro normalizaci a odstranění diakritiky
 def coding(strng):
     strng = unicodedata.normalize('NFD', strng)
-    strng = u"".join([c for c in strng if not unicodedata.combining(c)]);
+    strng = u"".join([c for c in strng if not unicodedata.combining(c)])
     return strng
 
 # Funkce pro odstranění speciálních znaků a volání funkce pro normalizaci znaků
@@ -53,7 +53,7 @@ def fixedtext(strng):
     for char in CHARS_TO_REMOVE:
         strng = strng.replace(char, "")
 
-    strng = str.lower(strng)
+    strng = str.upper(strng)
     strng = coding(strng)
     return strng
 
@@ -76,7 +76,7 @@ def get_text():
             encrypted_text += "XMEZERAX"
         elif j.isalpha():
             # Šifrování písmen podle afinní šifry
-            output = (a * (ord(j) - (65 + (32 * (ord(j) > 96)))) + b) % 26 #a ovlivněje změnu pozic a b ovlivňuje posun ord() získává ASCII hodnotu znaku a převede jej na celé číslo podle ASCII tabulky.
+            output = (a * (ord(j) - 65) + b) % 26 #a ovlivněje změnu pozic a b ovlivňuje posun ord() získává ASCII hodnotu znaku a převede jej na celé číslo podle ASCII tabulky. 60 - 90 97 - 122
             encrypted_text += string.ascii_uppercase[output]
         elif j.isdigit():
             encrypted_text += str((int(j) + b) % 10)
@@ -92,17 +92,17 @@ def desifruj_text():
     a = int(textbox_A.get(1.0, "end-1c"))  # Získání klíče A
     b = int(textbox_B.get(1.0, "end-1c"))  # Získání klíče B
     desifrovan = textbox_text_d.get(1.0, "end-1c")  # Získání textu k dešifrování
-    desifrovan = str.lower(desifrovan)  # Převedení na malá písmena
+    desifrovan = str.upper(desifrovan)  # Převedení na malá písmena
     add = ""
     desifrovan = desifrovan.replace(" ", "")  # Odstranění mezer
 
-    desifrovan = desifrovan.replace("xmezerax", " ")  # Obnovení mezer
+    desifrovan = desifrovan.replace("XMEZERAX", " ")  # Obnovení mezer
 
     for h in desifrovan:
         if h.isspace():
             add += " "
         elif h.isalpha():
-            alphabet = string.ascii_lowercase
+            alphabet = string.ascii_uppercase
             ot = alphabet.find(h)
             # Dešifrování podle afinní šifry
             position = (pow(a, -1, 26) * (ot - b)) % 26
