@@ -1,0 +1,20 @@
+Generování Klíčů:
+
+Uživatel (nebo systém) začíná generováním veřejného a privátního klíče.
+Veřejný klíč může být sdílen s kdokoli a slouží pro šifrování zpráv. Skládá se z dvou čísel: veřejného exponentu (typicky označovaného jako "e") a veřejného modulu (typicky označovaného jako "n").
+Privátný klíč je tajný a používá se pro dešifrování zpráv. Skládá se také z dvou čísel: privátního exponentu (typicky označovaného jako "d") a privátního modulu (též "n").
+Šifrování:
+
+K odeslání zprávy uživatel použije veřejný klíč příjemce.
+Zpráva je nejprve převedena na číslo, obvykle pomocí standardního kódování znaků, jako je ASCII nebo Unicode.
+Použije se veřejný exponent a veřejný modul, aby se zašifrovalo číslo. Výsledek je šifrový text, který může být poslán příjemci.
+Dešifrování:
+
+Příjemce použije svůj privátní klíč k dešifrování zprávy.
+Privátní exponent a privátní modul se použijí k dešifrování šifrového textu a obnovení původního čísla.
+Dešifrované číslo je pak převedeno zpět na text, čímž se získá původní zpráva.
+Digitální Podpis:
+
+Uživatel může také použít svůj privátní klíč k vytvoření digitálního podpisu pro zprávu.
+Digitální podpis je unikátní řetězec znaků vytvořený pomocí privátního klíče, který se připojuje k zprávě.
+Příjemce může použít veřejný klíč odesílatele k ověření podpisu a autentičnosti zprávy.
