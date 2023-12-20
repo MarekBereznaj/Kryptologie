@@ -1,32 +1,20 @@
 import tkinter as tk
 from tkinter import ttk
 import pyperclip
+import unicodedata
 
 # Abecedy pro češtinu a angličtinu
 alphabet_CZ = "ABCDEFGHIJKLMNOPQRSTUVXYZ"
 alphabet_EN = "ABCDEFGHIKLMNOPQRSTUVWXYZ"
 
-# Funkce pro copy tlačítko
-def copy_encrypted_text_to_clipboard():
-    pyperclip.copy(encrypted_text.get())
 
-# Funkce pro nahrazení speciálních českých znaků
-def replace_special_characters(text):
-    replacements = {
-        'á': 'a', 'č': 'c', 'ď': 'd', 'é': 'e', 'ě': 'e', 'í': 'i',
-        'ň': 'n', 'ó': 'o', 'ř': 'r', 'š': 's', 'ť': 't', 'ú': 'u',
-        'ů': 'u', 'ý': 'y', 'ž': 'z',
-        'Á': 'A', 'Č': 'C', 'Ď': 'D', 'É': 'E', 'Ě': 'E', 'Í': 'I',
-        'Ň': 'N', 'Ó': 'O', 'Ř': 'R', 'Š': 'S', 'Ť': 'T', 'Ú': 'U',
-        'Ů': 'U', 'Ý': 'Y', 'Ž': 'Z'
-    }
-    for original, replacement in replacements.items():
-        text = text.replace(original, replacement)
+def coding(text):
+    text = unicodedata.normalize('NFD', text)
+    text= u"".join([c for c in text if not unicodedata.combining(c)])
     return text
 
-# Čištění textu pro šifrování
 def clean_text_for_cipher(input_text, language):
-    input_text = replace_special_characters(input_text)
+    input_text = coding(input_text)
     if language == "CZ":
         cleaned_text = input_text.upper().replace(" ", "").replace("W", "V")
         cleaned_text = ''.join(char for char in cleaned_text if char in alphabet_CZ)
@@ -37,7 +25,7 @@ def clean_text_for_cipher(input_text, language):
 
 # Čištění klíče pro šifrování
 def clean_key_for_cipher(input_key, language):
-    input_key = replace_special_characters(input_key)
+    input_key = coding(input_key)
     if language == "CZ":
         cleaned_key = input_key.upper().replace(" ", "").replace("W", "V")
     elif language == "EN":
@@ -73,8 +61,11 @@ def convert_words_to_numbers(text):
     return text
 
 # Příprava textu k šifrování
-def prepare_text(text, filler='X'):
-    text = text.upper().replace("J", "I").replace(" ", "")
+def prepare_text(text, language, filler='X'):
+    if language == "EN":
+        text = text.upper().replace("J", "I").replace(" ", "")
+    elif language == "CZ":
+        text = text.upper().replace("W", "V").replace(" ", "")
     prepared_text = ""
     i = 0
     while i < len(text):
@@ -95,12 +86,11 @@ def find_position(letter, key_matrix):
         for col in range(5):
             if key_matrix[row][col] == letter:
                 return row, col
-    return None, None
 
 # Šifrování/dešifrování textu
 def playfair_cipher(text, key, language, encrypt=True):
     key_matrix = generate_playfair_key(key, language)
-    text = prepare_text(text)
+    text = prepare_text(text, language)
     result = ""
     for i in range(0, len(text), 2):
         row1, col1 = find_position(text[i], key_matrix)
@@ -142,7 +132,9 @@ def decrypt_text():
     decrypted_text_with_numbers = convert_words_to_numbers(text_with_numbers)
     decrypted_text_with_spaces_restored = decrypted_text_with_numbers.replace("QMEZERAQ", " ")
     decrypted_text.set(decrypted_text_with_spaces_restored)
-
+# Funkce pro copy tlačítko
+def copy_encrypted_text_to_clipboard():
+    pyperclip.copy(encrypted_text.get())
 
 app = tk.Tk()
 app.geometry("400x400")
