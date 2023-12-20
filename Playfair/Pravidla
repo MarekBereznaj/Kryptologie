@@ -1,3 +1,22 @@
+Vytvoření Matice:
+
+Začněte s klíčovým slovem (nebo frází) a odstraňte z něj opakující se písmena.
+Doplnění zbývajících písmen abecedy (bez opakovaných písmen z klíčového slova) a vytvoření 5x5 matice (tzv. Playfair Matrix).
+V matrici se obvykle používá 24 písmen (bez 'J'), a pokud máte jiný počet písmen v klíčovém slově, můžete přidat chybějící písmena podle abecedy.
+Šifrování:
+
+Otevřený text je rozdělen do dvojic písmen (bigramů). Pokud je počet písmen v otevřeném textu lichý, přidá se 'X' na konec, aby bylo možné vytvořit dvojice.
+Každý bigram se šifruje pomocí matice. Pravidla pro šifrování jsou následující:
+Pokud obě písmena v bigramu jsou ve stejném řádku matice, nahradí se písmeny v tom řádku, posunutými o jedno místo doprava. Pokud jste na konci řádku, přejdete na začátek.
+Pokud obě písmena v bigramu jsou ve stejném sloupci matice, nahradí se písmeny v tom sloupci, posunutými o jedno místo dolů. Pokud jste na konci sloupce, přejdete na začátek.
+Pokud písmena nejsou ve stejném řádku ani sloupci, vytvoří se obdélník v matrici obsahující tato písmena. Šifrovaný text se poté skládá z písmen, která jsou ve stejném řádku v tomto obdélníku, přičemž se zachovává jejich původní pořadí.
+Dešifrování:
+
+Dešifrování v Playfair šifře funguje na základě opačných pravidel oproti šifrování.
+Pokud obě písmena v bigramu jsou ve stejném řádku matice, nahradí se písmeny v tom řádku, posunutými o jedno místo doleva.
+Pokud obě písmena v bigramu jsou ve stejném sloupci matice, nahradí se písmeny v tom sloupci, posunutými o jedno místo nahoru.
+Pokud písmena nejsou ve stejném řádku ani sloupci, vytvoří se obdélník v matrici obsahující tato písmena. Dešifrovaný text se poté skládá z písmen, která jsou ve stejném řádku v tomto obdélníku, zachovávající jejich původní pořadí.
+
 Šifrování: Pro každou dvojici písmen se použijí následující pravidla pro jejich transformaci:
 
 a. Pokud obě písmena dvojice jsou ve stejném řádku matice, nahradí se písmena písmeny v tom samém řádku, přičemž se posunou o jedno místo doprava. Například: "AC" by se mohlo šifrovat jako "BD".
